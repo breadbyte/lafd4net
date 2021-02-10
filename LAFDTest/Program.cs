@@ -15,7 +15,7 @@ namespace LAFDTest {
             bool debugAll = false;
             
             LFFD lffd = new LFFD("C:/machina/models/anime/symbol.json", "C:/machina/models/anime/model.params");
-            var read = Cv2.ImRead(@"C:/machina/test/imgtest5.png").CvtColor(ColorConversionCodes.BGR2RGB);
+            var read = Cv2.ImRead(@"C:/machina/test/imgtest2.png").CvtColor(ColorConversionCodes.BGR2RGB);
             NDArray? ndarr;
             if (debugAll) {
                  ndarr = lffd.Predict(read, nmsFlag: false);
@@ -44,6 +44,8 @@ namespace LAFDTest {
                     float confidence = (float) ((ndarray) boxes[i])[4];
                     read.CopyTo(m);
                     m.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
+                    var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
+                    m.Rectangle(new Point(xmin, ymin - shape.Height), new Point(xmax - shape.Width, ymin), Scalar.Red, -1);
                     m.PutText($"{confidence * 100}%", new Point(xmin, ymin), HersheyFonts.HersheySimplex, 0.8d,
                         Scalar.Orange, 2);
                     Cv2.ImShow("ShowDemo", m);
@@ -61,6 +63,8 @@ namespace LAFDTest {
                     float ymax = (float) box[3];
                     float confidence = (float) box[4];
                     m.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
+                    var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
+                    m.Rectangle(new Point(xmin, ymin - shape.Height), new Point(xmax - shape.Width, ymin), Scalar.Red, -1);
                     m.PutText($"{confidence * 100}%", new Point(xmin, ymin), HersheyFonts.HersheySimplex, 0.8d,
                         Scalar.Orange, 2);
                 }
