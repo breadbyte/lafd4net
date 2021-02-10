@@ -222,21 +222,20 @@ namespace lafd4net {
             var area = heights * widths;
 
             var idxs = nd.Argsort(sc);
-            CustomList list = new CustomList();
+            List<int> list = new();
 
             foreach (float item in idxs.AsArray()) {
-                list.List.Add((int)item);
+                list.Add((int)item);
             }
-            list.Count = list.List.Count;
 
             for (int i = 0; i < list.Count; i++) {
                 // # grab the last index in the indexes list and add the
                 // # index value to the list of picked indexes
                 int last = list.Count - 1;
-                int j = list.List[last];
+                int j = list[last];
                 pick.Add(i);
 
-                var a1 = np.array(list.List.ToArray()[..last]);
+                var a1 = np.array(list.ToArray()[..last]);
                 
                 // # compare second highest score boxes
                 var xx1 = np.maximum(x1[j], x1[a1]);
@@ -249,17 +248,15 @@ namespace lafd4net {
                 var w = np.maximum(0, xx2 - xx1 + 1);
                 var h = np.maximum(0, yy2 - yy1 + 1);
                 
-                var overlap = w * h / area[np.array(list.List.ToArray()[..last])];
+                var overlap = w * h / area[np.array(list.ToArray()[..last])];
 
                 // delete all indexes from the index list that have
                 var overlapArr = np.concatenate( nd.Array(new[]{last}), ((ndarray[])np.where(overlap > overlapThreshold))[0]);
                 foreach (long idxnum in overlapArr) {
-                    list.List.Remove((int)idxnum);
-                    list.List.Insert((int)idxnum, 0);
-                    list.Count -= 1;
+                    list.RemoveAt((int)idxnum);
+                    list.Insert((int)idxnum, -1);
                 }
-
-                Debugger.Break();
+                list.RemoveAll(x => x == -1);
             }
 
             List<NDArray> finalBoxes = new();
@@ -273,12 +270,6 @@ namespace lafd4net {
             Console.WriteLine($"NMS took {s.ElapsedMilliseconds}ms.");
             return retval;
         }
-
-        public class CustomList {
-            public List<int> List = new();
-            public int Count { get; set; }
-        }
-        
 
         public struct BoundingBoxParams {
             public float x_lt_mat { get; set; }
