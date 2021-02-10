@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lafd4net", "lafd4net\lafd4net.csproj", "{A39924FD-4257-426A-AC29-FBEB9F565B64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAFDTest", "LAFDTest\LAFDTest.csproj", "{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A39924FD-4257-426A-AC29-FBEB9F565B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A39924FD-4257-426A-AC29-FBEB9F565B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A39924FD-4257-426A-AC29-FBEB9F565B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A39924FD-4257-426A-AC29-FBEB9F565B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
