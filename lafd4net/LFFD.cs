@@ -203,11 +203,15 @@ namespace lafd4net {
             if (boxes.Shape[0] == 0)
                 return boxes;
 
+            if (boxes.Shape[0] == 1)
+                return boxes;
+
             if (boxes.DataType != DType.Float32)
                 boxes = boxes.AsType(DType.Float32);
 
             // initialize the list of picked indexes
             List<float> pick = new();
+            
             // grab the coordinates of the bounding boxes
             var x1 = boxes.T[0].AsNumpy();
             var x2 = boxes.T[2].AsNumpy();
@@ -233,7 +237,7 @@ namespace lafd4net {
                 // # index value to the list of picked indexes
                 int last = list.Count - 1;
                 int j = list[last];
-                pick.Add(i);
+                pick.Add(j);
 
                 var a1 = np.array(list.ToArray()[..last]);
                 
@@ -251,7 +255,7 @@ namespace lafd4net {
                 var overlap = w * h / area[np.array(list.ToArray()[..last])];
 
                 // delete all indexes from the index list that have
-                var overlapArr = np.concatenate( nd.Array(new[]{last}), ((ndarray[])np.where(overlap > overlapThreshold))[0]);
+                var overlapArr = np.concatenate( np.array(new[]{last}), ((ndarray[])np.where(overlap > overlapThreshold))[0]);
                 foreach (long idxnum in overlapArr) {
                     list.RemoveAt((int)idxnum);
                     list.Insert((int)idxnum, -1);
