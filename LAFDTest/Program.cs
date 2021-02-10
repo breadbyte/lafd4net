@@ -45,9 +45,8 @@ namespace LAFDTest {
                     read.CopyTo(m);
                     m.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
                     var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
-                    m.Rectangle(new Point(xmin, ymin - shape.Height), new Point(xmax - shape.Width, ymin), Scalar.Red, -1);
-                    m.PutText($"{confidence * 100}%", new Point(xmin, ymin), HersheyFonts.HersheySimplex, 0.8d,
-                        Scalar.Orange, 2);
+                    m.Rectangle(new Point(xmin, ymax - shape.Height - baseline), new Point(xmin + shape.Width, ymax), Scalar.Red, -1);
+                    m.PutText($"{confidence * 100}%", new Point(xmin, ymax), HersheyFonts.HersheySimplex, 1d, Scalar.Orange, 2);
                     Cv2.ImShow("ShowDemo", m);
                     Cv2.WaitKey(0);
                 }
@@ -64,9 +63,8 @@ namespace LAFDTest {
                     float confidence = (float) box[4];
                     m.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
                     var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
-                    m.Rectangle(new Point(xmin, ymin - shape.Height), new Point(xmax - shape.Width, ymin), Scalar.Red, -1);
-                    m.PutText($"{confidence * 100}%", new Point(xmin, ymin), HersheyFonts.HersheySimplex, 0.8d,
-                        Scalar.Orange, 2);
+                    m.Rectangle(new Point(xmin, ymax - shape.Height - baseline), new Point(xmin + shape.Width, ymax), Scalar.Red, -1);
+                    m.PutText($"{confidence * 100}%", new Point(xmin, ymax), HersheyFonts.HersheySimplex, 1d, Scalar.Orange, 2);
                 }
                 Cv2.ImShow("ShowDemo", m);
             }
