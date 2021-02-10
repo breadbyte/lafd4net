@@ -147,10 +147,10 @@ namespace lafd4net {
                 y_lt_mat = y_lt_mat.Clip(0, float.MaxValue);
 
                 x_rb_mat = x_rb_mat / resizeScale;
-                x_rb_mat = x_rb_mat.Clip(float.MinValue, image.Height);
+                x_rb_mat = x_rb_mat.Clip(float.MinValue, image.Width);
 
                 y_rb_mat = y_rb_mat / resizeScale;
-                y_rb_mat = y_rb_mat.Clip(float.MinValue, image.Width);
+                y_rb_mat = y_rb_mat.Clip(float.MinValue, image.Height);
 
                 ndarray[] selectIndex = (ndarray[]) np.where(scoreMap.AsNumpy() > scoreThreshold);
                 if (selectIndex[0].size == 0)
