@@ -175,26 +175,25 @@ namespace lafd4net {
                 for (int j = topK; j < 0; j--) {
                     bboxCollection.RemoveAt(topK);
                 }
-                
-                List<NDArray> ndArrayList = new();
-                foreach (var ent in bboxCollection.Values.Reverse()) {
-                    ndArrayList.Add(nd.Array(new[]
-                        {ent.x_lt_mat, ent.y_lt_mat, ent.x_rb_mat, ent.y_rb_mat, ent.scoremap}));
-                }
-
-                var stacked = nd.Stack(ndArrayList.ToArray(), ndArrayList.Count);
-
-                Console.WriteLine($"Inference took {s.ElapsedMilliseconds}ms.");
-                if (nmsFlag) {
-                    var nms = NMS(stacked, nmsThreshold);
-                    s.Stop();
-                    return nms;
-                }
-                s.Stop();
-                return stacked;
             }
+            
+            List<NDArray> ndArrayList = new();
+            foreach (var ent in bboxCollection.Values.Reverse()) {
+                ndArrayList.Add(nd.Array(new[]
+                    {ent.x_lt_mat, ent.y_lt_mat, ent.x_rb_mat, ent.y_rb_mat, ent.scoremap}));
+            }
+
+            var stacked = nd.Stack(ndArrayList.ToArray(), ndArrayList.Count);
+
+            Console.WriteLine($"Inference took {s.ElapsedMilliseconds}ms.");
+            if (nmsFlag) {
+                var nms = NMS(stacked, nmsThreshold);
+                s.Stop();
+                return nms;
+            }
+            
             s.Stop();
-            return null;
+            return stacked;
         }
 
         public NDArray NMS(NDArray boxes, float overlapThreshold) {
