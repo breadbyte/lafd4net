@@ -17,21 +17,30 @@ namespace LAFDTest {
             LFFD lffd = new LFFD("C:/machina/models/anime/symbol.json", "C:/machina/models/anime/model.params");
             var read = Image.FromFile(@"C:/machina/test/imgtest4.png");
             var resizeScale = Math.Min(384f / Math.Max(read.Width, read.Height), 1f);
-            Cv2.NamedWindow("ShowDemo");
 
             bool useSystemDrawing = true;
             if (useSystemDrawing) {
-
+                MemoryStream memStream = new MemoryStream();
+                
                 var result = lffd.PredictWholeImage(read, resizeScale);
                 if (result == null) {
                     Console.WriteLine("Prediction did not return anything!");
                     Environment.Exit(1);
                 }
 
-                MemoryStream memStream = new MemoryStream();
                 result.Save(memStream, ImageFormat.Png);
-                
                 Cv2.ImShow("ShowDemo", Cv2.ImDecode(memStream.ToArray(), ImreadModes.Color));
+                Cv2.WaitKey();
+                memStream.Dispose();
+                memStream = new MemoryStream();
+
+                foreach (var face in lffd.PredictFaces(read, resizeScale)) {
+                    face.Save(memStream, ImageFormat.Png);
+                    Cv2.ImShow("ShowDemo", Cv2.ImDecode(memStream.ToArray(), ImreadModes.Color));
+                    Cv2.WaitKey();
+                    memStream.Dispose();
+                    memStream = new MemoryStream();
+                }
             }
 
             else {

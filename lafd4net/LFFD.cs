@@ -104,13 +104,13 @@ namespace lafd4net {
             var boxes = ndArray.AsNumpy();
             matFinal = mat.CvtColor(ColorConversionCodes.BGR2RGB);
             foreach (ndarray box in boxes) {
-                int xmin = (int)(float) box[0];
-                int ymin = (int)(float) box[1];
-                int xmax = (int)(float) box[2];
-                int ymax = (int)(float) box[3];
+                var xmin = (int)(float) box[0];
+                var ymin = (int)(float) box[1];
+                var xmax = (int)(float) box[2];
+                var ymax = (int)(float) box[3];
                 float confidence = (float) box[4];
                 
-                yield return Image.FromStream((new Mat(matFinal,Rect.FromLTRB(xmin, ymin, xmin-ymin, xmax-ymax)).ToMemoryStream()));
+                yield return Image.FromStream(new Mat(matFinal, Rect.FromLTRB(xmin, ymin, xmax, ymax)).ToMemoryStream());
             }
         }
 
