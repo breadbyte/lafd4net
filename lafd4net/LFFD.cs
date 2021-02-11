@@ -29,6 +29,9 @@ namespace lafd4net {
         private int inputHeight = 480;
         private int inputWidth = 640;
         private int outputScales = 5;
+        private bool alternativeInput = false;
+        private string symbolJson;
+        private byte[] modelBytes;
 
         private Module _mxNetModule;
         private Context _mxNetContext;
@@ -37,6 +40,19 @@ namespace lafd4net {
             this.symbolPath = symbolPath;
             this.modelPath = modelPath;
 
+            foreach (var receptiveField in _receptiveFieldList) {
+                constant.Add(receptiveField / 2);
+            }
+
+            _mxNetContext = Context.Cpu();
+        }
+
+        public LFFD(string symbolJson, byte[] modelFile) {
+            alternativeInput = true;
+
+            this.symbolJson = symbolJson;
+            modelBytes = modelFile;
+            
             foreach (var receptiveField in _receptiveFieldList) {
                 constant.Add(receptiveField / 2);
             }
@@ -153,10 +169,10 @@ namespace lafd4net {
             var dataShape = new Shape(1, 3, imgH, imgW);
             var dataNameShape = new DataDesc(dataName, dataShape);
 
-            _mxNetModule = new Module(Symbol.Load(symbolPath), new[] {dataName}, null, new[] {_mxNetContext});
+            _mxNetModule = new Module(alternativeInput ? Symbol.LoadJSON(symbolJson) : Symbol.Load(symbolPath), new[] {dataName}, null, new[] {_mxNetContext});
             _mxNetModule.Bind(new[] {dataNameShape}, for_training: false);
 
-            var ndarrModel = NDArray.Load(modelPath);
+            var ndarrModel = alternativeInput ? NDArrayDict.LoadFromBuffer(modelBytes) : NDArray.Load(modelPath);
             var argNameArrays = new NDArrayDict();
             var auxNameArrays = new NDArrayDict();
             argNameArrays.Add("data", nd.Zeros(dataShape, _mxNetContext));
