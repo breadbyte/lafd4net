@@ -17,11 +17,12 @@ namespace LAFDTest {
             LFFD lffd = new LFFD("C:/machina/models/anime/symbol.json", "C:/machina/models/anime/model.params");
             var read = Cv2.ImRead(@"C:/machina/test/imgtest4.png");
             NDArray? ndarr;
+            var resizeScale = Math.Min(384f / Math.Max(read.Width, read.Height), 1f);
             if (debugAll) {
-                 ndarr = lffd.Predict(read, nmsFlag: false);
+                 ndarr = lffd.Predict(read, resizeScale, nmsFlag: false);
             }
             else {
-                ndarr = lffd.Predict(read);
+                ndarr = lffd.Predict(read, resizeScale);
             }
 
             if (ndarr == null) {
