@@ -9,6 +9,7 @@
         <Title>lafd4net</Title>
         <Authors>breadbyte</Authors>
         <PackageProjectUrl>https://github.com/breadbyte/lafd4net</PackageProjectUrl>
+        <Description>A port of light-anime-face-detector to .NET 5.0, which is based on LFFD, a Light and Fast Face Detector for Edge Devices</Description>
     </PropertyGroup>
 
     <ItemGroup>
