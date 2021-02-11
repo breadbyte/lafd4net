@@ -7,9 +7,7 @@ A port of [light-anime-face-detector](https://github.com/cheese-roll/light-anime
 2. Refer to the LAFDTest project for a demo.
 
 ## Issues
-Detection is a bit iffy at times.
+If you find an image that this library does not detect that [lafd](https://github.com/cheese-roll/light-anime-face-detector) does detect, please [open an issue](https://github.com/breadbyte/lafd4net/issues/new) about it!
 
-If you find an image that this library does not detect that [lafd](https://github.com/cheese-roll/light-anime-face-detector) does detect, open an issue about it!
-
-### This is an extremely experimental library!
+### This is an experimental library!
 Use at your own risk!
