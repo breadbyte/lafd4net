@@ -115,9 +115,11 @@ namespace lafd4net {
         }
 
         public NDArray? Predict(Mat image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000, float nmsThreshold = 0.3f, bool nmsFlag = true) {
+            #if DEBUG
             Stopwatch s = new Stopwatch();
             s.Start();
-            
+            #endif
+
             // Load the image.
             var img = NDArray.LoadCV2Mat(image, _mxNetContext);
             
@@ -170,10 +172,12 @@ namespace lafd4net {
 
             #endregion
 
+            #if DEBUG
             Console.WriteLine($"Model loading took {s.ElapsedMilliseconds}ms.");
             s.Reset();
             s.Start();
-            
+            #endif
+
             // Give the data to MXNet.
             DataBatch batch = new DataBatch(img);
             _mxNetModule.Forward(batch, false);
@@ -260,19 +264,23 @@ namespace lafd4net {
             // Finalize our list.
             var stacked = nd.Stack(ndArrayList.ToArray(), ndArrayList.Count);
 
+            #if DEBUG
             Console.WriteLine($"Inference took {s.ElapsedMilliseconds}ms.");
+            s.Stop();
+            #endif
+            
             if (nmsFlag) {
                 var nms = NMS(stacked, nmsThreshold);
-                s.Stop();
                 return nms;
             }
-            
-            s.Stop();
             return stacked;
         }
         public NDArray NMS(NDArray boxes, float overlapThreshold) {
+            #if DEBUG
             Stopwatch s = new Stopwatch();
             s.Start();
+            #endif
+            
             switch (boxes.Shape[0]) {
                 case 0:
                 case 1:
@@ -349,8 +357,12 @@ namespace lafd4net {
             }
             
             var retval = nd.Stack(finalBoxes.ToArray(), finalBoxes.Count).Squeeze(1);
+            
+            #if DEBUG
             s.Stop();
             Console.WriteLine($"NMS took {s.ElapsedMilliseconds}ms.");
+            #endif
+            
             return retval;
         }
 
