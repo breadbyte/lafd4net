@@ -15,7 +15,7 @@ namespace LAFDTest {
             bool debugAll = false;
             
             LFFD lffd = new LFFD("C:/machina/models/anime/symbol.json", "C:/machina/models/anime/model.params");
-            var read = Cv2.ImRead(@"C:/machina/test/imgtest2.png").CvtColor(ColorConversionCodes.BGR2RGB);
+            var read = Cv2.ImRead(@"C:/machina/test/imgtest4.png");
             NDArray? ndarr;
             if (debugAll) {
                  ndarr = lffd.Predict(read, nmsFlag: false);
@@ -37,12 +37,13 @@ namespace LAFDTest {
 
             if (debugSingle) {
                 for (int i = 0; i < boxes.shape.iDims[0]; i++) {
+                    read.CopyTo(m);
+                    m = m.CvtColor(ColorConversionCodes.BGR2RGB);
                     float xmin = (float) ((ndarray) boxes[i])[0];
                     float ymin = (float) ((ndarray) boxes[i])[1];
                     float xmax = (float) ((ndarray) boxes[i])[2];
                     float ymax = (float) ((ndarray) boxes[i])[3];
                     float confidence = (float) ((ndarray) boxes[i])[4];
-                    read.CopyTo(m);
                     m.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
                     var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
                     m.Rectangle(new Point(xmin, ymax - shape.Height - baseline), new Point(xmin + shape.Width, ymax), Scalar.Red, -1);
@@ -55,6 +56,7 @@ namespace LAFDTest {
             }
             else {
                 read.CopyTo(m);
+                m = m.CvtColor(ColorConversionCodes.BGR2RGB);
                 foreach (ndarray box in boxes) {
                     float xmin = (float) box[0];
                     float ymin = (float) box[1];
