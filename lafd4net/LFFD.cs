@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using MxNet;
@@ -10,6 +12,9 @@ using MxNet.Modules;
 using NumpyDotNet;
 using NumpyLib;
 using OpenCvSharp;
+using OpenCvSharp.Extensions;
+using Point = OpenCvSharp.Point;
+using Size = OpenCvSharp.Size;
 
 namespace lafd4net {
     public class LFFD {
@@ -39,6 +44,76 @@ namespace lafd4net {
             _mxNetContext = Context.Cpu();
         }
 
+        /// <summary>
+        /// Returns an entire image with bounding boxes and confidence percentage.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="resizeScale"></param>
+        /// <param name="scoreThreshold"></param>
+        /// <param name="topK"></param>
+        /// <param name="nmsThreshold"></param>
+        /// <param name="nmsFlag"></param>
+        /// <returns></returns>
+        public Image? PredictWholeImage(Image image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000, float nmsThreshold = 0.3f, bool nmsFlag = true) {
+            var memStream = new MemoryStream();
+            image.Save(memStream, image.RawFormat);
+            var mat = Cv2.ImDecode(memStream.ToArray(), ImreadModes.Color);
+            var matFinal = new Mat();
+            var ndArray = Predict(mat, resizeScale, scoreThreshold, topK, nmsThreshold, nmsFlag);
+
+            if (ndArray == null)
+                return null;
+
+            var boxes = ndArray.AsNumpy();
+            matFinal = mat.CvtColor(ColorConversionCodes.BGR2RGB);
+            foreach (ndarray box in boxes) {
+                float xmin = (float) box[0];
+                float ymin = (float) box[1];
+                float xmax = (float) box[2];
+                float ymax = (float) box[3];
+                float confidence = (float) box[4];
+                matFinal.Rectangle(new Point(xmin, ymin), new Point(xmax, ymax), Scalar.Red, 2);
+                var shape = Cv2.GetTextSize($"{confidence * 100}%", HersheyFonts.HersheySimplex, 1d, 2, out var baseline);
+                matFinal.Rectangle(new Point(xmin, ymax - shape.Height - baseline), new Point(xmin + shape.Width, ymax), Scalar.Red, -1);
+                matFinal.PutText($"{confidence * 100}%", new Point(xmin, ymax), HersheyFonts.HersheySimplex, 1d, Scalar.Orange, 2);
+            }
+
+            return Image.FromStream(matFinal.ToMemoryStream());
+        }
+        
+        /// <summary>
+        /// Returns an N amount of detected faces.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="resizeScale"></param>
+        /// <param name="scoreThreshold"></param>
+        /// <param name="topK"></param>
+        /// <param name="nmsThreshold"></param>
+        /// <param name="nmsFlag"></param>
+        /// <returns></returns>
+        public IEnumerable<Image> PredictFaces(Image image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000, float nmsThreshold = 0.3f, bool nmsFlag = true) {
+            var memStream = new MemoryStream();
+            image.Save(memStream, image.RawFormat);
+            var mat = Cv2.ImDecode(memStream.ToArray(), ImreadModes.Color);
+            var matFinal = new Mat();
+            var ndArray = Predict(mat, resizeScale, scoreThreshold, topK, nmsThreshold, nmsFlag);
+
+            if (ndArray == null)
+                yield break;
+
+            var boxes = ndArray.AsNumpy();
+            matFinal = mat.CvtColor(ColorConversionCodes.BGR2RGB);
+            foreach (ndarray box in boxes) {
+                int xmin = (int)(float) box[0];
+                int ymin = (int)(float) box[1];
+                int xmax = (int)(float) box[2];
+                int ymax = (int)(float) box[3];
+                float confidence = (float) box[4];
+                
+                yield return Image.FromStream((new Mat(matFinal,Rect.FromLTRB(xmin, ymin, xmin-ymin, xmax-ymax)).ToMemoryStream()));
+            }
+        }
+
         public NDArray? Predict(Mat image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000, float nmsThreshold = 0.3f, bool nmsFlag = true) {
             Stopwatch s = new Stopwatch();
             s.Start();
@@ -52,7 +127,6 @@ namespace lafd4net {
             }
 
             // Resize our image.
-            resizeScale = Math.Min(384f / Math.Max(image.Width, image.Height), 1f);
             float shorterSide = Math.Min(image.Width, image.Height);
 
             if (shorterSide * resizeScale < 128f)
@@ -196,7 +270,6 @@ namespace lafd4net {
             s.Stop();
             return stacked;
         }
-
         public NDArray NMS(NDArray boxes, float overlapThreshold) {
             Stopwatch s = new Stopwatch();
             s.Start();
@@ -268,13 +341,13 @@ namespace lafd4net {
                 // Remove the placeholder indexes afterwards.
                 list.RemoveAll(x => x == -1);
             }
-
+            
             List<NDArray> finalBoxes = new();
 
             foreach (var iter in pick) {
                 finalBoxes.Add(boxes[iter]);
             }
-
+            
             var retval = nd.Stack(finalBoxes.ToArray(), finalBoxes.Count).Squeeze(1);
             s.Stop();
             Console.WriteLine($"NMS took {s.ElapsedMilliseconds}ms.");
