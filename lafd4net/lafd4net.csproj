@@ -15,7 +15,10 @@
 
     <ItemGroup>
       <PackageReference Include="MxNet.Runtime.Redist" Version="1.6.0" />
-      <PackageReference Include="MxNet.Sharp" Version="1.5.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MxNet.Sharp\src\MxNet\MxNet.csproj" />
     </ItemGroup>
 
 </Project>
