@@ -354,7 +354,7 @@ namespace lafd4net {
             return retval;
         }
 
-        public struct BoundingBoxParams {
+        private struct BoundingBoxParams {
             public float x_lt_mat { get; set; }
             public float y_lt_mat { get; set; }
             public float x_rb_mat { get; set; }
