@@ -25,14 +25,6 @@ namespace lafd4net {
         private int inputWidth = 640;
         private int outputScales = 5;
 
-        private string[] outputBlobNames = new[] {
-            "softmax0", "conv8_3_bbox",
-            "softmax1", "conv11_3_bbox",
-            "softmax2", "conv14_3_bbox",
-            "softmax3", "conv17_3_bbox",
-            "softmax4", "conv20_3_bbox"
-        };
-
         private Module _mxNetModule;
         private Context _mxNetContext;
 
@@ -47,16 +39,19 @@ namespace lafd4net {
             _mxNetContext = Context.Cpu();
         }
 
-        public NDArray? Predict(Mat image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000,
-            float nmsThreshold = 0.3f, bool nmsFlag = true, object skipScaleBranchList = null) {
+        public NDArray? Predict(Mat image, float resizeScale = 1f, float scoreThreshold = 0.7f, int topK = 10000, float nmsThreshold = 0.3f, bool nmsFlag = true) {
             Stopwatch s = new Stopwatch();
             s.Start();
             
+            // Load the image.
             var img = NDArray.LoadCV2Mat(image, _mxNetContext);
+            
+            // Invalid image?
             if (img.Dimension != 3 || img.Shape[2] != 3) {
                 throw new InvalidDataException("Invalid image format");
             }
 
+            // Resize our image.
             resizeScale = Math.Min(384f / Math.Max(image.Width, image.Height), 1f);
             float shorterSide = Math.Min(image.Width, image.Height);
 
@@ -67,12 +62,15 @@ namespace lafd4net {
                 img = NDArray.LoadCV2Mat(image.Resize(Size.Zero, resizeScale, resizeScale));
             }
 
+            // Prepare the image.
             var imgH = img.Shape[0];
             var imgW = img.Shape[1];
             img = img.AsType(DType.Float32);
             img = img.ExpandDims(-1);
             img = img.Transpose(new Shape(3, 2, 0, 1));
 
+            
+            // Load our model.
             #region load model
 
             var dataName = "data";
@@ -102,13 +100,14 @@ namespace lafd4net {
             s.Reset();
             s.Start();
             
+            // Give the data to MXNet.
             DataBatch batch = new DataBatch(img);
             _mxNetModule.Forward(batch, false);
-
             var results = _mxNetModule.GetOutputs();
 
             SortedList<float, BoundingBoxParams> bboxCollection = new();
 
+            // For all our outputs, filter it and add it to bboxCollection.
             for (int i = 0; i < outputScales; i++) {
                 var scoreMap = nd.Squeeze(results[0][i * 2], new Shape(0, 1));
                 var bboxMap = nd.Squeeze(results[0][i * 2 + 1], new Shape(0));
@@ -177,12 +176,14 @@ namespace lafd4net {
                 }
             }
             
+            // Create a final list of detected boxes.
             List<NDArray> ndArrayList = new();
             foreach (var ent in bboxCollection.Values.Reverse()) {
                 ndArrayList.Add(nd.Array(new[]
                     {ent.x_lt_mat, ent.y_lt_mat, ent.x_rb_mat, ent.y_rb_mat, ent.scoremap}));
             }
 
+            // Finalize our list.
             var stacked = nd.Stack(ndArrayList.ToArray(), ndArrayList.Count);
 
             Console.WriteLine($"Inference took {s.ElapsedMilliseconds}ms.");
@@ -199,11 +200,11 @@ namespace lafd4net {
         public NDArray NMS(NDArray boxes, float overlapThreshold) {
             Stopwatch s = new Stopwatch();
             s.Start();
-            if (boxes.Shape[0] == 0)
-                return boxes;
-
-            if (boxes.Shape[0] == 1)
-                return boxes;
+            switch (boxes.Shape[0]) {
+                case 0:
+                case 1:
+                    return boxes;
+            }
 
             if (boxes.DataType != DType.Float32)
                 boxes = boxes.AsType(DType.Float32);
@@ -255,10 +256,16 @@ namespace lafd4net {
 
                 // delete all indexes from the index list that have
                 var overlapArr = np.concatenate( np.array(new[]{last}), ((ndarray[])np.where(overlap > overlapThreshold))[0]);
-                foreach (long idxnum in overlapArr) {
-                    list.RemoveAt((int)idxnum);
-                    list.Insert((int)idxnum, -1);
+                
+                foreach (long indexToRemove in overlapArr) {
+                    // Remove the number at that index.
+                    list.RemoveAt((int)indexToRemove);
+                    
+                    // Keep the current index count, or the other indexToRemoves in the current iter will fail.
+                    list.Insert((int)indexToRemove, -1);
                 }
+                
+                // Remove the placeholder indexes afterwards.
                 list.RemoveAll(x => x == -1);
             }
 
