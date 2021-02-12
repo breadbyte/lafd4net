@@ -199,7 +199,7 @@ namespace lafd4net {
             _mxNetModule.Forward(batch, false);
             var results = _mxNetModule.GetOutputs();
 
-            SortedList<float, BoundingBoxParams> bboxCollection = new();
+            List<Tuple<float, BoundingBoxParams>> bboxCollection = new();
 
             // For all our outputs, filter it and add it to bboxCollection.
             for (int i = 0; i < outputScales; i++) {
@@ -262,7 +262,7 @@ namespace lafd4net {
                         scoremap = score
                     };
                     
-                    bboxCollection.Add(score, bbox);
+                    bboxCollection.Add(new Tuple<float, BoundingBoxParams>(score, bbox));
                 }
 
                 for (int j = topK; j < 0; j--) {
@@ -271,10 +271,12 @@ namespace lafd4net {
             }
             
             // Create a final list of detected boxes.
+            bboxCollection.Sort((firstItem, prevItem) => prevItem.Item1.CompareTo(firstItem.Item1));
+            
             List<NDArray> ndArrayList = new();
-            foreach (var ent in bboxCollection.Values.Reverse()) {
+            foreach (var ent in bboxCollection) {
                 ndArrayList.Add(nd.Array(new[]
-                    {ent.x_lt_mat, ent.y_lt_mat, ent.x_rb_mat, ent.y_rb_mat, ent.scoremap}));
+                    {ent.Item2.x_lt_mat, ent.Item2.y_lt_mat, ent.Item2.x_rb_mat, ent.Item2.y_rb_mat, ent.Item2.scoremap}));
             }
 
             // Finalize our list.

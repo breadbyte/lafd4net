@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <RepositoryUrl>https://github.com/breadbyte/lafd4net</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
-        <PackageVersion>1.1.3-dev</PackageVersion>
+        <PackageVersion>1.1.4-dev</PackageVersion>
         <Title>lafd4net</Title>
         <Authors>breadbyte</Authors>
         <PackageProjectUrl>https://github.com/breadbyte/lafd4net</PackageProjectUrl>
