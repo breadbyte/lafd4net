@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lafd4net", "lafd4net\lafd4n
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAFDTest", "LAFDTest\LAFDTest.csproj", "{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MxNet", "MxNet.Sharp\src\MxNet\MxNet.csproj", "{F696FE7D-6A41-4F92-ABBF-FA5FBEAEC019}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3905E314-57B6-4F99-B70E-8F7BE8FDBC1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F696FE7D-6A41-4F92-ABBF-FA5FBEAEC019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F696FE7D-6A41-4F92-ABBF-FA5FBEAEC019}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F696FE7D-6A41-4F92-ABBF-FA5FBEAEC019}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F696FE7D-6A41-4F92-ABBF-FA5FBEAEC019}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
