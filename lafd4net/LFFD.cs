@@ -279,6 +279,10 @@ namespace lafd4net {
                     {ent.Item2.x_lt_mat, ent.Item2.y_lt_mat, ent.Item2.x_rb_mat, ent.Item2.y_rb_mat, ent.Item2.scoremap}));
             }
 
+            // Return null if we don't have anything on our bboxcollection.
+            if (ndArrayList.Count == 0)
+                return null;
+
             // Finalize our list.
             var stacked = nd.Stack(ndArrayList.ToArray(), ndArrayList.Count);
 
