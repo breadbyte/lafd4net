@@ -1,8 +1,9 @@
-# lafd4net ![Nuget](https://buildstats.info/nuget/lafd4net)
+# lafd4net [![Nuget](https://buildstats.info/nuget/lafd4net)](https://www.nuget.org/packages/lafd4net/)
 
 A port of [light-anime-face-detector](https://github.com/cheese-roll/light-anime-face-detector) to .NET 5.0, which is based on [LFFD, a Light and Fast Face Detector for Edge Devices](https://github.com/YonghaoHe/LFFD-A-Light-and-Fast-Face-Detector-for-Edge-Devices) [(paper)](https://arxiv.org/abs/1904.10633)
 
 ## Usage
+0. Get the [nuget package](https://www.nuget.org/packages/lafd4net/) (make sure to get latest prerelease)
 1. Get models from https://github.com/cheese-roll/light-anime-face-detector/
 2. Refer to the LAFDTest project for a demo.
 
